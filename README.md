@@ -158,7 +158,7 @@ Human and workload identities receive only the permissions required for their re
 
 ### Assume Breach
 
-Network segmentation, centralized telemetry, detection engineering, incident investigation, and response provide additional security when preventative controls fail or are bypassed.
+Network segmentation, centralized telemetry, detection engineering, incident investigation, and response provide additional security when preventive controls fail or are bypassed.
 
 ## Threat Model
 
@@ -322,29 +322,19 @@ Project 5
 Secure DevSecOps Delivery
         ↓
 Project 6
-ENterprise Cloud Security Architecture
+Enterprise Cloud Security Architecture
 ```
 
 Together, the projects demonstrate the progression:
 
-(��	ե����H�Aɽѕ�Ѓ�H��ѕ�Ѐ��I��������H�!�ɑ����H����ٕȁM���ɕ�䃊H�ɍ��ѕ�Ш�((���M����́������Ʌѕ�()���ɕ��
-܉�5��ɽͽ�Ё��Ʉ�%��
-܉�i�ɼ�Q���р�
-܁���ɔ�I	
-��
-݁���ɔ�	
- �
-܉�5�������%���ѥѥ�̀�
-܉���ɔ�9��ݽɭ�����
-܁�9M̀�
-݁���ɔ�A����倃
-݁�	������
-܁�1�������ѥ�̀�
-݁�5��ɽͽ�ЁM��ѥ�����
-݁�-E1��
-݁��ѕ�ѥ���������ɥ����
-݁�%������ЁI�����͕��
-܁�Q�ɕ�Ё5���������
-܁�
-��Ր��ٕɹ������
-݁�M���ɥ��ɍ��ѕ���ɕ�((���M����()9��ѡMхȁ�́������ɽ��������љ�������٥ɽ����а���Ё���ɽ�Սѥ�����ѕ��ɥ͔������嵕�и()Q����ɽ���Ё������Ʌѕ��͕��Ʌѕ́��������ѥ�́ѡ�Ёݕɔ��Ʌ�ѥ�����م����ѕ���ɽ��хɝ�е�хє�����ɽ�́ɕ�եɥ�������ѥ����������ͥ�������а�ݽɭ��������Ʌ���Ս��ɔ���ȁ�ɽ�Սѥ���͍������������хѥ���
+**Build → Protect → Detect & Respond → Harden → Deliver Securely → Architect**
+
+## Skills Demonstrated
+
+`Azure` · `Microsoft Entra ID` · `Zero Trust` · `Azure RBAC` · `Azure ABAC` · `Managed Identities` · `Azure Networking` · `NSGs` · `Azure Policy` · `Bicep` · `Log Analytics` · `Microsoft Sentinel` · `KQL` · `Detection Engineering` · `Incident Response` · `Threat Modeling` · `Cloud Governance` · `Security Architecture`
+
+## Scope
+
+NorthStar is a controlled portfolio environment, not a production enterprise deployment.
+
+The project deliberately separates capabilities that were practically validated from target-state controls requiring additional licensing, cost, workload infrastructure, or production-scale implementation.
