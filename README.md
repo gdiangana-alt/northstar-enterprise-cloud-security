@@ -297,9 +297,13 @@ See [Architecture Decisions & Constraints](docs/architecture/architecture-decisi
 - [Governance Framework](docs/governance/governance-framework.md)
 - [Security Controls Matrix](docs/security-controls/security-controls-matrix.md)
 
+### Evidence
+
+- [NorthStar Portfolio Evidence Index](evidence/portfolio-evidence-index.md)
+
 ## NorthStar Portfolio
 
-This project represents the final stage of a four-project progression:
+This project represents the architecture layer of a six-project progression:
 
 ```text
 Project 1
@@ -312,12 +316,18 @@ Project 3
 Security Operations & Incident Response
         ↓
 Project 4
+Secure Azure Landing Zone
+        ↓
+Project 5
+Secure DevSecOps Delivery
+        ↓
+Project 6
 Enterprise Cloud Security Architecture
 ```
 
 Together, the projects demonstrate the progression:
 
-**Build → Protect → Detect & Respond → Architect**
+**Build → Protect → Detect & Respond → Harden → Deliver Securely → Architect**
 
 ## Skills Demonstrated
 
