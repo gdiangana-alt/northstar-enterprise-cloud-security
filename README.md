@@ -300,3 +300,11 @@ Together, the projects demonstrate the progression:
 NorthStar is a controlled portfolio environment, not a production enterprise deployment.
 
 The project deliberately separates capabilities that were practically validated from target-state controls requiring additional licensing, cost, workload infrastructure, or production-scale implementation.
+
+## Hybrid Enterprise Cloud Architecture
+
+[Read the hybrid architecture case study](docs/architecture/hybrid-enterprise-cloud-architecture.md).
+
+Covers on-premises-to-Azure connectivity, routing, hybrid DNS, identity
+dependencies, private access, migration and recovery. Includes eight design
+decisions and fourteen acceptance tests. Deployment validation remains pending.
