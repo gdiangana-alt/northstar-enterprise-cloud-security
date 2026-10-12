@@ -2,107 +2,36 @@
 
 Enterprise Azure cloud security architecture integrating infrastructure security, Zero Trust identity, data protection, governance, security monitoring, detection engineering, and incident response.
 
-This project is the **flagship architecture project** of the NorthStar Azure Security Portfolio. It brings together the capabilities validated across the infrastructure, identity, and security-operations projects into a unified enterprise security design.
+This project is the **flagship architecture project** of the NorthStar Azure Security Portfolio. It brings together the capabilities validated across six infrastructure, identity, landing-zone, secure-delivery and security-operations projects into a unified enterprise security design.
 
 ## Architecture
 
 ```mermaid
 flowchart TB
+    Users["Users and administrators"] --> Entra["Entra ID, MFA, groups and RBAC"]
+    Internet((Internet)) --> WAF["Application Gateway WAF"]
+    Entra --> Platform["Segmented Azure platform"]
+    WAF --> App["HTTPS-only App Service"]
+    Platform --> App
+    App --> KeyVault["Key Vault via managed identity"]
 
-    Internet((Internet))
-    Users[Enterprise Users]
-    Admins[Cloud Administrators]
+    Source["Terraform and Bicep"] --> Gates["GitHub security and policy gates"]
+    Gates --> OIDC["OIDC plan and controlled delivery"]
+    OIDC --> Platform
 
-    subgraph Identity["Identity & Zero Trust"]
-        Entra[Microsoft Entra ID]
-        MFA[MFA / Security Defaults]
-        Groups[Security Groups]
-        AuthZ[Azure RBAC / ABAC]
-        MI[Managed Identities]
+    Platform --> Logs["Activity and diagnostic telemetry"]
+    WAF --> Logs
+    Logs --> Sentinel["Log Analytics and Sentinel"]
+    Sentinel --> Detection["Tuned KQL analytics"]
+    Detection --> Incident["Incident and approval task"]
+    Incident --> Playbook["Managed-identity response playbook"]
 
-        CA[Conditional Access<br/>Target State]
-        PIM[Privileged Identity Management<br/>Target State]
-    end
-
-    subgraph Network["Azure Network Security"]
-        VNet[NorthStar VNet]
-        Web[Web Subnet]
-        NSG[Network Security Group]
-
-        App[Application Tier<br/>Target State]
-        Mgmt[Management Tier<br/>Target State]
-        Private[Private Endpoints / Bastion<br/>Target State]
-    end
-
-    subgraph Data["Data Protection"]
-        Storage[Azure Storage]
-        Classification[DataClassification = Internal]
-        SAS[Time-Limited SAS]
-        KV[Azure Key Vault<br/>Target State]
-    end
-
-    subgraph Governance["Governance"]
-        Policy[Azure Policy]
-        IaC[Azure Bicep]
-        Guardrails[Security Guardrails]
-    end
-
-    subgraph SecOps["Security Operations"]
-        Activity[Azure Activity Log]
-        Diagnostics[Diagnostic Settings]
-        LAW[Log Analytics]
-        Sentinel[Microsoft Sentinel]
-        KQL[KQL Analytics Rule]
-        Incident[Alert / Incident]
-        Response[Investigation & Response]
-    end
-
-    Internet --> Web
-    Users --> Entra
-    Admins --> Entra
-
-    Entra --> MFA
-    Entra -.-> CA
-    Entra --> Groups
-    Groups --> AuthZ
-    Entra -.-> PIM
-
-    AuthZ --> VNet
-    AuthZ --> Storage
-    MI --> Storage
-    MI -.-> KV
-
-    VNet --> Web
-    Web --> NSG
-    Web -.-> App
-    Mgmt -.-> VNet
-    Private -.-> VNet
-
-    Storage --> Classification
-    Storage --> SAS
-    KV -.-> Storage
-
-    Policy --> Classification
-    Policy --> VNet
-    Policy --> Storage
-    IaC --> VNet
-    Guardrails --> Policy
-
-    VNet --> Activity
-    Storage --> Activity
-    Policy --> Activity
-    AuthZ --> Activity
-
-    Activity --> Diagnostics
-    Diagnostics --> LAW
-    LAW --> Sentinel
-    Sentinel --> KQL
-    KQL --> Incident
-    Incident --> Response
+    Entra -.-> Premium["Conditional Access and PIM — target state"]
+    Platform -.-> Private["Private Link and Bastion — target state"]
 ```
 
-**Solid paths** represent capabilities validated within the NorthStar portfolio.  
-**Dashed paths** represent target-state enterprise capabilities.
+**Solid paths** represent capabilities implemented or validated within the NorthStar portfolio.
+**Dashed paths** represent target-state enterprise capabilities that are not claimed as deployed.
 
 ## Security Architecture
 
@@ -138,11 +67,11 @@ Alert → Incident → Investigation → Classification → Resolution
 | Domain | Architecture |
 |---|---|
 | Identity & Access | Microsoft Entra ID, MFA, security groups, RBAC, ABAC, managed identities |
-| Network Security | Azure VNet, subnet segmentation, NSGs, controlled connectivity |
-| Data Protection | Classification, storage authorization, encryption, delegated access |
-| Governance | Azure Policy, security guardrails, classification enforcement, Bicep |
-| Security Operations | Activity Log, Log Analytics, Microsoft Sentinel, KQL |
-| Incident Response | Detection, alerting, investigation, classification and resolution |
+| Network Security | Segmented VNet, NSGs, Application Gateway WAF, controlled connectivity |
+| Workload & Data | HTTPS-only App Service, Key Vault, classification, encryption and delegated access |
+| Governance & Delivery | Azure Policy, Terraform/Bicep, protected PRs, Checkov, policy-as-code and OIDC |
+| Security Operations | Activity Log, WAF diagnostics, Log Analytics, Sentinel and tuned KQL |
+| Incident Response | Investigation, classification, approval automation and managed-identity playbook |
 
 ## Zero Trust
 
@@ -170,6 +99,8 @@ The NorthStar threat model evaluates attack paths involving:
 - Credential and secret exposure
 - Security-control tampering
 - Unauthorized data access
+- CI/CD or federated-identity compromise
+- Unauthorized or unsafe response automation
 
 Each scenario is mapped to preventive, detective, and responsive controls.
 
@@ -186,25 +117,36 @@ Validated capabilities include:
 - Azure RBAC and ABAC
 - Managed identities
 - Azure VNet and NSGs
+- Application Gateway WAF
+- HTTPS-only App Service
+- Azure Key Vault with scoped managed-identity access
 - Azure Policy
 - Data classification
-- Azure Bicep
+- Azure Bicep and Terraform
+- Protected pull-request security gates
+- Passwordless GitHub Actions OIDC
 - Azure Activity Log
+- Application Gateway diagnostics
 - Log Analytics
 - Microsoft Sentinel
 - KQL detection engineering
 - Scheduled analytics
 - Security alert and incident investigation
+- Operational-state drift validation
+- Approval-gated Sentinel automation
+- Managed-identity Logic App response execution
 
 Target-state capabilities include:
 
 - Conditional Access
 - Privileged Identity Management
-- Azure Key Vault
 - Azure Bastion
 - Private Endpoints / Private Link
-- Expanded workload segmentation
-- SOAR automation
+- Risk-based identity protection and automated access reviews
+- WAF Prevention mode following tuning and rollback validation
+- Automated certificate renewal
+- Broader Entra, endpoint, application and Defender telemetry
+- Destructive containment actions behind protected approval
 
 See [Security Controls Matrix](docs/security-controls/security-controls-matrix.md).
 
@@ -212,7 +154,7 @@ See [Security Controls Matrix](docs/security-controls/security-controls-matrix.m
 
 NorthStar uses centralized governance to establish consistent security requirements.
 
-A mandatory `DataClassification=Internal` Azure Policy was validated by intentionally attempting a noncompliant resource operation and confirming that Azure denied the operation until the required classification was supplied.
+A mandatory `DataClassification=Internal` Azure Policy was validated by intentionally attempting a noncompliant resource operation and confirming that Azure denied the operation until the required classification was supplied. The landing zone also validates policy-based metadata requirements and protected infrastructure-as-code delivery.
 
 The portfolio also demonstrates an important architectural lesson: governance controls require carefully designed scopes and exceptions because blanket enforcement can interfere with legitimate platform-managed security resources.
 
@@ -220,10 +162,10 @@ See [Governance Framework](docs/governance/governance-framework.md).
 
 ## Security Operations
 
-The validated security-operations pipeline is:
+The validated security-operations and response pipeline is:
 
 ```text
-Azure Control-Plane Activity
+Azure Control-Plane and WAF Activity
           ↓
 Azure Activity Log
           ↓
@@ -233,26 +175,28 @@ Log Analytics
           ↓
 Microsoft Sentinel
           ↓
-KQL Scheduled Analytics Rule
+Tuned KQL Scheduled Analytics Rule
           ↓
 Security Alert
           ↓
 Sentinel Incident
           ↓
-Investigation
+Investigation and Severity Decision
           ↓
-Classification
+Approval Task for Medium / High
           ↓
-Resolution
+Managed-Identity Playbook or Manual Response
+          ↓
+Classification and Resolution
 ```
 
-A controlled Azure operation was used to generate a real control-plane failure. The event was ingested into Log Analytics, detected through KQL, converted into a Sentinel alert and incident, investigated, classified as authorized security testing, and resolved.
+A controlled Azure operation was used to generate a real control-plane failure. The event was ingested into Log Analytics, detected through KQL, converted into a Sentinel alert and incident, investigated, classified as authorized security testing, and resolved. WAF telemetry was also baselined over 30 days to replace a noisy match-all rule with a multi-signal detection. Positive and negative tests validated the approval rule, and an approved managed-identity Logic App run added an incident comment and audit label without executing destructive containment.
 
 ## Residual Risk
 
 NorthStar recognizes that security controls reduce risk rather than eliminate it.
 
-Residual risks include compromised authorized identities, privilege misuse, application vulnerabilities, detection gaps, credential exposure, and delays associated with manual incident response.
+Residual risks include compromised authorized identities, privilege misuse, application vulnerabilities, detection gaps, certificate-lifecycle failure and delays associated with approval or manual containment.
 
 Target-state improvements are documented for each major risk area.
 
@@ -270,6 +214,10 @@ Major design decisions include:
 - Centralized security monitoring
 - Analyst validation of security detections
 - Clear separation between validated and target-state controls
+- Protected passwordless infrastructure delivery
+- Telemetry-based detection tuning
+- Human approval for consequential response
+- Sanitized evidence as a control output
 
 See [Architecture Decisions & Constraints](docs/architecture/architecture-decisions.md).
 
@@ -295,7 +243,21 @@ See [Architecture Decisions & Constraints](docs/architecture/architecture-decisi
 ### Governance & Controls
 
 - [Governance Framework](docs/governance/governance-framework.md)
+- [Security Operating Model](docs/governance/security-operating-model.md)
 - [Security Controls Matrix](docs/security-controls/security-controls-matrix.md)
+- [Security Framework Crosswalk](docs/security-controls/framework-crosswalk.md)
+
+### Strategy & Operations
+
+- [Executive Architecture Brief](docs/executive-architecture-brief.md)
+- [Completion Matrix](docs/completion-matrix.md)
+- [Implementation Roadmap](docs/architecture/implementation-roadmap.md)
+- [Security Continuity and Recovery](docs/business-continuity-and-recovery.md)
+- [Interview Guide](docs/interview-guide.md)
+
+### Evidence
+
+- [NorthStar Portfolio Evidence Index](evidence/portfolio-evidence-index.md)
 
 ### Evidence
 
@@ -331,7 +293,7 @@ Together, the projects demonstrate the progression:
 
 ## Skills Demonstrated
 
-`Azure` · `Microsoft Entra ID` · `Zero Trust` · `Azure RBAC` · `Azure ABAC` · `Managed Identities` · `Azure Networking` · `NSGs` · `Azure Policy` · `Bicep` · `Log Analytics` · `Microsoft Sentinel` · `KQL` · `Detection Engineering` · `Incident Response` · `Threat Modeling` · `Cloud Governance` · `Security Architecture`
+`Azure` · `Microsoft Entra ID` · `Zero Trust` · `Azure RBAC` · `Azure ABAC` · `Managed Identities` · `Azure Networking` · `Application Gateway WAF` · `Key Vault` · `Azure Policy` · `Terraform` · `Bicep` · `GitHub Actions` · `OIDC` · `Log Analytics` · `Microsoft Sentinel` · `KQL` · `SOAR` · `Logic Apps` · `Threat Modeling` · `Cloud Governance` · `Security Architecture`
 
 ## Scope
 

@@ -146,16 +146,17 @@ An attacker exploits an externally accessible workload.
 
 - Network segmentation
 - NSGs
-- Restricted inbound access
+- Application Gateway WAF
+- Restricted App Service ingress
 - Workload identities
 - Least-privilege resource permissions
 - Private-access architecture where appropriate
 
 ### Detective Controls
 
-- Workload and Azure telemetry
+- WAF, gateway, workload and Azure telemetry
 - Centralized logging
-- Sentinel detections
+- Tuned Sentinel detections
 
 ### Response
 
@@ -183,7 +184,8 @@ Application credentials, secrets, tokens, or keys are exposed through code, conf
 ### Preventive Controls
 
 - Managed identities
-- Azure Key Vault architecture
+- Azure Key Vault with scoped RBAC
+- Managed TLS certificate retrieval
 - No secrets in source repositories
 - Scoped RBAC
 - Time-limited delegated access
@@ -274,6 +276,84 @@ A user or workload attempts to access data outside its authorized scope.
 - Investigate data-access scope
 - Preserve evidence
 - Escalate according to data sensitivity
+
+---
+
+## Attack Path 7 — CI/CD or Federated Identity Compromise
+
+### Scenario
+
+An attacker modifies infrastructure code or abuses a trusted automation workflow to access or change Azure resources.
+
+### Risks
+
+- Unauthorized infrastructure change
+- Credential or state exposure
+- Security-control weakening
+- Persistence through trusted delivery paths
+
+### Preventive Controls
+
+- Protected branches and required pull-request checks
+- Terraform validation, Checkov and policy-as-code
+- GitHub OIDC instead of stored Azure client secrets
+- Federated subject restricted to the approved repository and branch
+- Plan-only identity without deployment permission
+- Separate remote-state access scope
+
+### Detective Controls
+
+- GitHub workflow and branch-protection evidence
+- Azure Activity Log
+- Terraform expected-state validation
+- Monitoring of federated credentials and role assignments
+
+### Response
+
+- Disable or remove the affected federated credential
+- Revoke automation access and review workflow history
+- Compare live state with approved source and remote state
+- Investigate Azure activity performed by the identity
+- Restore trusted configuration through protected change control
+
+---
+
+## Attack Path 8 — Unauthorized or Unsafe Response Automation
+
+### Scenario
+
+A playbook is invoked without adequate approval or receives permissions capable of disrupting legitimate services.
+
+### Risks
+
+- Account or workload outage
+- Destruction or loss of evidence
+- Excessive privilege through automation
+- Unattributed containment activity
+
+### Preventive Controls
+
+- Severity-based approval task
+- `ApprovalRequired` and `ResponseApproved` audit labels
+- Manual invocation after recorded approval
+- Dedicated managed identity
+- Workspace-scoped Sentinel Responder role
+- Non-destructive playbook actions
+
+### Detective Controls
+
+- Sentinel incident task, comment and label history
+- Logic App run history
+- Azure Activity Log
+- Failed control-plane operation detection
+
+### Response
+
+- Disable the automation rule or Logic App
+- Revoke the playbook identity's role assignment
+- Preserve run history and incident evidence
+- Reverse the action using its approved rollback procedure
+- Investigate the approver, operator and triggering context
 
 ## Defense-in-Depth Model
 

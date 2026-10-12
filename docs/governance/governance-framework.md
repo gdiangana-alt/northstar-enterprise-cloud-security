@@ -148,7 +148,9 @@ Infrastructure as Code improves governance by making infrastructure configuratio
 - Testable
 - Documented
 
-NorthStar previously validated Azure Bicep as part of its infrastructure implementation.
+NorthStar validates both Azure Bicep and modular Terraform. The secure-delivery project adds formatting and validation, Checkov scanning, policy-as-code, protected pull requests and a passwordless OIDC live-plan workflow.
+
+The plan identity is intentionally unable to deploy infrastructure. A production deployment workflow would require a separate identity, protected environment approval, explicit change authorization and post-deployment expected-state validation.
 
 Enterprise environments should integrate IaC with security validation and deployment controls.
 
@@ -165,6 +167,8 @@ Organizations should monitor:
 - Resource configuration changes
 - Logging configuration
 - Security-control drift
+
+NorthStar's operational validator performs ten expected-versus-actual checks covering subscription, workspace, Sentinel and analytics-rule configuration. A mismatch returns a non-zero exit code and produces sanitized JSON evidence, demonstrating how governance can be continuously verified rather than assumed.
 
 Relevant activity should feed centralized security monitoring where appropriate.
 

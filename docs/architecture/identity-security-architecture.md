@@ -121,6 +121,13 @@ This reduces reliance on:
 
 Managed identities receive only the Azure roles required by their workload.
 
+Validated workload identities include:
+
+- an App Service system-assigned identity with vault-scoped secret access;
+- an Application Gateway user-assigned identity for TLS certificate retrieval;
+- a plan-only managed identity used by GitHub Actions through OIDC; and
+- a Logic App system-assigned identity with Microsoft Sentinel Responder at workspace scope.
+
 ## Identity Lifecycle
 
 Access should change with the user's organizational lifecycle.

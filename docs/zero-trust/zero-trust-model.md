@@ -44,12 +44,13 @@ Controls therefore focus on limiting blast radius and increasing visibility.
 NorthStar implements:
 
 - Network segmentation
-- Restricted inbound access
+- Application Gateway WAF and restricted backend ingress
 - Resource-level authorization
 - Centralized logging
 - KQL detections
 - Sentinel alerts
 - Incident investigation and response
+- Approval-gated response automation
 
 ## Identity Layer
 
@@ -89,6 +90,7 @@ Controls include:
 - User-assigned managed identities
 - Scoped role assignments
 - Secrets-management architecture
+- Azure Key Vault with scoped RBAC
 - Resource-level permissions
 - Monitoring of management activity
 
@@ -118,6 +120,7 @@ Controls include:
 - Deployment guardrails
 - Resource tagging
 - Policy scope and exclusion design
+- Protected infrastructure delivery and OIDC
 
 ## Monitoring Layer
 
@@ -133,6 +136,7 @@ Controls include:
 - Alerts
 - Incidents
 - Investigation and classification
+- Approval tasks and managed-identity playbook execution
 
 ## Zero Trust Flow
 
@@ -157,3 +161,4 @@ Microsoft Sentinel
 Detection & Investigation
        ↓
 Response
+```

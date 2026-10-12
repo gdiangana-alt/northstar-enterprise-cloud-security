@@ -2,144 +2,105 @@
 
 ## Architecture Overview
 
-The following diagram integrates the validated NorthStar security capabilities with clearly identified target-state enterprise controls.
+The architecture combines identity, protected application delivery, governed infrastructure change, centralized monitoring and approval-gated response. Solid connections are implemented or validated; dashed connections are production target-state recommendations.
 
 ```mermaid
 flowchart TB
-
-    Internet((Internet))
-    Users[Enterprise Users]
-    Admins[Cloud Administrators]
-
-    subgraph Identity["Identity & Zero Trust"]
-        Entra[Microsoft Entra ID]
-        MFA[MFA / Security Defaults]
-        Groups[Security Groups]
-        AuthZ[Azure RBAC / ABAC]
-        MI[Managed Identities]
-
-        CA[Conditional Access<br/>Target State]
-        PIM[Privileged Identity Management<br/>Target State]
+    subgraph Access["Identity and access"]
+        Users["Users and administrators"] --> Entra["Microsoft Entra ID"]
+        Entra --> MFA["MFA / Security Defaults"]
+        Entra --> Groups["Security groups"]
+        Groups --> RBAC["Scoped RBAC / ABAC"]
+        Entra -.-> Premium["Conditional Access / PIM"]
     end
 
-    subgraph Network["Azure Network Security"]
-        VNet[NorthStar VNet]
-        Web[Web Subnet]
-        NSG[Network Security Group]
-
-        App[Application Tier<br/>Target State]
-        Mgmt[Management Tier<br/>Target State]
-        Private[Private Endpoints / Bastion<br/>Target State]
+    subgraph Delivery["Secure delivery"]
+        Code["Terraform and Bicep"] --> Gates["Validate / Checkov / policy"]
+        Gates --> Review["Protected pull request"]
+        Review --> OIDC["OIDC plan identity"]
     end
 
-    subgraph Data["Data Protection"]
-        Storage[Azure Storage]
-        Classification[DataClassification = Internal]
-        SAS[Time-Limited SAS]
-        KV[Azure Key Vault<br/>Target State]
+    subgraph Platform["Azure landing zone"]
+        Internet((Internet)) --> WAF["Application Gateway WAF"]
+        WAF --> App["HTTPS-only App Service"]
+        App --> KV["Key Vault"]
+        VNet["Segmented VNet and NSGs"] --> App
+        MI["Managed identities"] --> KV
+        Private["Private Link / Bastion"] -.-> VNet
     end
 
-    subgraph Governance["Governance"]
-        Policy[Azure Policy]
-        IaC[Azure Bicep]
-        Guardrails[Security Guardrails]
+    subgraph Operations["Security operations"]
+        Telemetry["Activity and WAF telemetry"] --> LAW["Log Analytics"]
+        LAW --> Sentinel["Microsoft Sentinel"]
+        Sentinel --> KQL["Tuned KQL analytics"]
+        KQL --> Incident["Incident"]
+        Incident --> Approval["Approval task"]
+        Approval --> Playbook["Managed-identity playbook"]
     end
 
-    subgraph SecOps["Security Operations"]
-        Activity[Azure Activity Log]
-        Diagnostics[Diagnostic Settings]
-        LAW[Log Analytics]
-        Sentinel[Microsoft Sentinel]
-        KQL[KQL Analytics Rule]
-        Incident[Alert / Incident]
-        Response[Investigation & Response]
-    end
-
-    Internet --> Web
-    Users --> Entra
-    Admins --> Entra
-
-    Entra --> MFA
-    Entra -.-> CA
-    Entra --> Groups
-    Groups --> AuthZ
-    Entra -.-> PIM
-
-    AuthZ --> VNet
-    AuthZ --> Storage
-    MI --> Storage
-    MI -.-> KV
-
-    VNet --> Web
-    Web --> NSG
-    Web -.-> App
-    Mgmt -.-> VNet
-    Private -.-> VNet
-
-    Storage --> Classification
-    Storage --> SAS
-    KV -.-> Storage
-
-    Policy --> Classification
-    Policy --> VNet
-    Policy --> Storage
-    IaC --> VNet
-    Guardrails --> Policy
-
-    VNet --> Activity
-    Storage --> Activity
-    Policy --> Activity
-    AuthZ --> Activity
-
-    Activity --> Diagnostics
-    Diagnostics --> LAW
-    LAW --> Sentinel
-    Sentinel --> KQL
-    KQL --> Incident
-    Incident --> Response
+    RBAC --> Platform
+    OIDC --> Platform
+    Platform --> Telemetry
+    WAF --> Telemetry
 ```
 
-## Diagram Legend
-
-**Solid connections** represent controls or security flows validated within the NorthStar portfolio.
-
-**Dashed connections** represent target-state enterprise capabilities that were not implemented as permanent NorthStar controls.
-
-## Validated Architecture
-
-The portfolio provides practical validation across the following security layers:
+## Validated Control Path
 
 ```text
-Infrastructure
-     ↓
-Identity & Access
-     ↓
-Data Protection
-     ↓
-Cloud Governance
-     ↓
-Centralized Monitoring
-     ↓
-Detection Engineering
-     ↓
-Incident Response
+Identity and least privilege
+        ↓
+Segmented infrastructure and WAF
+        ↓
+Managed identity and Key Vault
+        ↓
+Policy-governed infrastructure delivery
+        ↓
+Centralized activity and WAF telemetry
+        ↓
+Tuned Sentinel detection
+        ↓
+Approval-gated response
+        ↓
+Sanitized evidence and control improvement
 ```
+
+## Implemented or Validated Capabilities
+
+- Entra users, security groups, baseline MFA and group-based RBAC;
+- Azure RBAC, ABAC, managed identities and identity-lifecycle testing;
+- segmented management, web, application and WAF subnets with NSGs;
+- Application Gateway WAF in Detection mode and restricted App Service ingress;
+- Key Vault with scoped managed-identity access and TLS certificate retrieval;
+- Terraform/Bicep, protected pull requests, Checkov and policy-as-code;
+- passwordless GitHub Actions OIDC using a plan-only Azure identity;
+- Azure Activity and WAF telemetry in Log Analytics and Sentinel;
+- tuned control-plane and WAF analytics;
+- severity-based approval automation and a non-destructive Logic App; and
+- live operational-state checks with sanitized JSON evidence.
 
 ## Target-State Extensions
 
-The architecture identifies additional enterprise capabilities without presenting them as implemented lab components:
+- Conditional Access, identity risk protection and PIM;
+- automated lifecycle workflows and access reviews;
+- Private Link, Bastion and broader workload isolation;
+- WAF Prevention mode after approved tuning and rollback testing;
+- automated certificate issuance and renewal;
+- broader Entra, Defender, endpoint and application telemetry;
+- reversible containment actions behind protected approvals; and
+- business-approved recovery objectives with tested restoration.
 
-- Conditional Access
-- Privileged Identity Management
-- Azure Key Vault
-- Expanded application and management segmentation
-- Private Endpoints
-- Azure Bastion
+## Trust Boundaries
 
-These controls represent the next maturity level for a production enterprise implementation.
+| Boundary | Required control |
+|---|---|
+| User to Entra | Strong authentication, device/user context and lifecycle governance |
+| Internet to WAF | TLS, managed rules, request logging and tuned enforcement |
+| WAF to application | Restricted backend ingress and healthy HTTPS connection |
+| Application to secrets | Managed identity and vault-scoped RBAC |
+| GitHub to Azure | Federated credential, protected branch and least-privilege identity |
+| Azure to SOC | Diagnostic settings, retention and monitoring of control changes |
+| Incident to response | Evidence, recorded approval, minimum privilege and rollback |
 
 ## Architectural Principle
 
-NorthStar combines preventive, detective, and responsive controls rather than relying on a single security boundary.
-
-Identity establishes who or what may request access, authorization determines permitted actions, network controls restrict connectivity, governance establishes guardrails, data controls protect information, and Microsoft Sentinel provides centralized detection and response.
+NorthStar does not rely on a single security boundary. Identity determines who or what may request access, infrastructure limits reachable paths, secure delivery governs change, data controls protect sensitive material, and security operations provide detection and accountable response when prevention is insufficient.

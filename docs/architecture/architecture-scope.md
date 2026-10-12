@@ -6,7 +6,7 @@ Design an enterprise Azure security architecture that integrates the infrastruct
 
 ## Architecture Domains
 
-The architecture covers six primary security domains:
+The architecture covers eight primary security domains:
 
 1. Identity and Access Management
 2. Network and Infrastructure Security
@@ -14,6 +14,8 @@ The architecture covers six primary security domains:
 4. Cloud Governance and Policy
 5. Security Monitoring and Detection
 6. Incident Response
+7. Secure Infrastructure Delivery
+8. Continuity and Recovery
 
 ## Design Principles
 
@@ -41,8 +43,11 @@ The architecture integrates capabilities previously validated across the NorthSt
 - Azure virtual networking
 - Subnet segmentation
 - Network Security Groups
+- Application Gateway WAF
+- HTTPS-only App Service
+- Azure Key Vault
 - Azure CLI
-- Infrastructure as Code with Bicep
+- Infrastructure as Code with Bicep and Terraform
 - Infrastructure troubleshooting
 
 ### Identity and Zero Trust
@@ -66,9 +71,23 @@ The architecture integrates capabilities previously validated across the NorthSt
 - Security alerts
 - Incident investigation
 - Incident classification and resolution
+- Telemetry-based WAF detection tuning
+- Approval-gated incident automation
+- Managed-identity Logic App execution
+- Operational-state drift validation
+
+### Secure Delivery
+
+- Terraform formatting and validation
+- Checkov infrastructure security scanning
+- Policy-as-code enforcement
+- Protected pull-request gates
+- Passwordless GitHub Actions OIDC
+- Plan-only least-privilege Azure identity
+- Sanitized workflow evidence
 
 ## Target Outcome
 
 The final architecture will demonstrate how these capabilities operate together as a cohesive enterprise cloud-security system rather than as isolated Azure services.
 
-The architecture will document security boundaries, trust relationships, attack paths, preventive controls, detective controls, response capabilities, architectural decisions, and implementation constraints.
+The architecture documents security boundaries, trust relationships, attack paths, preventive controls, detective controls, response capabilities, ownership, recovery dependencies, architectural decisions, implementation constraints and a phased enterprise roadmap.

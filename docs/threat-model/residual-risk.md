@@ -12,12 +12,13 @@ Security architecture reduces risk but does not eliminate it. Residual risk must
 |---|---|---|---|
 | Compromised user credentials | MFA, RBAC, security groups, monitoring | Medium | Conditional Access and risk-based authentication |
 | Excessive administrative privilege | RBAC, least privilege, activity monitoring | Medium | Privileged Identity Management and time-limited elevation |
-| Internet-facing workload compromise | NSGs and network segmentation | Medium | Private access, expanded segmentation and workload security controls |
-| Secret or credential exposure | Managed identities and scoped permissions | Medium-Low | Azure Key Vault and automated secret rotation |
+| Internet-facing workload compromise | Segmentation, restricted backend ingress, WAF Detection mode and telemetry | Medium | Tuned Prevention mode, workload protection and private access where justified |
+| Secret or credential exposure | Managed identities, scoped permissions and Key Vault | Medium-Low | Automated rotation, certificate renewal and secret-lifecycle monitoring |
 | Unauthorized data access | RBAC, ABAC, classification and encryption | Medium-Low | Private endpoints and enhanced data monitoring |
 | Security-control modification | Azure Policy, RBAC and Activity Log monitoring | Medium | Dedicated privileged controls and additional tampering detections |
 | Detection gaps | Activity Log, Log Analytics, Sentinel and KQL | Medium | Additional telemetry sources and expanded detection coverage |
-| Manual incident response | Sentinel investigation and documented response workflow | Medium | SOAR automation and response playbooks |
+| Delayed or unsafe response | Approval automation and non-destructive managed-identity playbook | Medium-Low | Tested reversible containment actions with protected approvals |
+| Certificate expiry | Key Vault-backed TLS and documented renewal procedure | Medium | Automated issuance, renewal and expiry alerting |
 
 ## Identity Risk
 
@@ -56,7 +57,7 @@ Residual risk remains from:
 - Application vulnerabilities
 - Operational mistakes
 
-Target-state Key Vault and private connectivity provide additional protection.
+Key Vault and managed identities reduce stored-credential exposure. Private connectivity, automated rotation and certificate-lifecycle monitoring provide additional protection.
 
 ## Detection Risk
 
@@ -77,13 +78,13 @@ Detection engineering should evolve as threats, workloads, and available telemet
 
 ## Response Risk
 
-The validated NorthStar incident workflow requires analyst investigation and decision-making.
+The validated NorthStar incident workflow requires analyst investigation and approval before consequential response.
 
-Manual response introduces potential delays during high-impact incidents.
+Approval and manual invocation can still introduce delays during high-impact incidents.
 
-Target-state environments can reduce response time through carefully controlled automation and SOAR playbooks.
+NorthStar validates severity-based automation and a non-destructive managed-identity playbook. This reduces preparation and documentation delay without granting the playbook authority to disable identities or isolate workloads.
 
-Automated response should include safeguards to prevent legitimate activity from being disrupted by false positives.
+Future containment automation should be reversible, separately authorized, least privilege and tested against false positives and partial failure.
 
 ## Risk Treatment
 
