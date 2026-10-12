@@ -8,7 +8,7 @@ This index gives reviewers a direct path from each portfolio claim to public, sa
 |---|---|---|---|---|
 | 1 | [Azure Infrastructure & Network Security](https://github.com/gdiangana-alt/northstar-azure-lab) | Azure administration, networking, Bicep and troubleshooting | Validated | Bicep, CLI/Bash/PowerShell scripts, completion matrix and fault-remediation narrative |
 | 2 | [Identity & Zero Trust](https://github.com/gdiangana-alt/northstar-identity-zero-trust) | Entra ID, RBAC/ABAC, managed identities and identity lifecycle | Validated | Terraform, control documentation, troubleshooting evidence and sanitized screenshots |
-| 3 | [Security Operations](https://github.com/gdiangana-alt/northstar-azure-security-operations) | Sentinel, KQL, detection engineering and incident response | Validated | Detection/hunting queries, live validation, incident record, playbook and screenshots |
+| 3 | [Security Operations](https://github.com/gdiangana-alt/northstar-azure-security-operations) | Sentinel, KQL, detection engineering and approval-gated SOAR | Validated | Tuned analytics, live validation, incident remediation, automation rule, managed-identity playbook and sanitized evidence |
 | 4 | [Secure Azure Landing Zone](https://github.com/gdiangana-alt/northstar-secure-azure-landing-zone) | Segmented Terraform foundation, WAF, TLS, Key Vault and monitoring | Validated lab implementation | Terraform modules, WAF/TLS validation and Sentinel case study |
 | 5 | [Secure DevSecOps Pipeline](https://github.com/gdiangana-alt/northstar-secure-devsecops-pipeline) | Policy as code, security scanning, protected PRs and OIDC | Validated | GitHub Actions, Rego policy, remediation register and protected-gate screenshots |
 | 6 | [Enterprise Cloud Security Architecture](https://github.com/gdiangana-alt/northstar-enterprise-cloud-security) | Zero Trust architecture, threat modeling, governance and residual risk | Documented architecture grounded in Projects 1–5 | Architecture decisions, threat model, controls matrix and residual-risk assessment |
@@ -61,6 +61,10 @@ This index gives reviewers a direct path from each portfolio claim to public, sa
 - KQL detection and threat-hunting content.
 - Controlled-event validation and documented incident handling.
 - A repeatable analyst response procedure for RBAC assignment alerts.
+- Telemetry-based replacement of a noisy match-all WAF rule.
+- Approval-gated Medium/High incident automation with a Low-severity negative test.
+- Managed-identity Logic App execution after recorded approval.
+- Ten expected-versus-actual operational-state checks through GitHub Actions OIDC.
 
 **Evidence paths**
 
@@ -70,6 +74,14 @@ This index gives reviewers a direct path from each portfolio claim to public, sa
 - `docs/sentinel-live-validation.md`
 - `incidents/NS-IR-2026-001-failed-rbac-assignment-triage.md`
 - `playbooks/azure-rbac-assignment-alert-response.md`
+- `analytics/detections/application-gateway-waf-high-confidence-scan.kql`
+- `automation/soar/incident-approval-automation.bicep`
+- `automation/soar/approved-response-playbook.bicep`
+- `automation/scripts/Test-NorthStarOperationalState.ps1`
+- `docs/sentinel-defender-soar-operating-model.md`
+- `docs/operational-validation-implementation.md`
+- `evidence/soar-validation/validation-summary.json`
+- `evidence/operational-validation/latest.json`
 - `evidence/screenshots/`
 
 ## 4. Secure Azure Landing Zone
@@ -79,6 +91,7 @@ This index gives reviewers a direct path from each portfolio claim to public, sa
 - Terraform-managed network, identity, governance, monitoring and web-front modules.
 - Application Gateway WAF and diagnostic settings.
 - Managed TLS certificate validation and documented WAF operations.
+- Key Vault access through workload and gateway managed identities.
 - Cost-conscious deployment and teardown decisions.
 
 **Evidence paths**
@@ -128,6 +141,13 @@ This index gives reviewers a direct path from each portfolio claim to public, sa
 
 - `docs/architecture/enterprise-architecture-diagram.md`
 - `docs/architecture/architecture-decisions.md`
+- `docs/executive-architecture-brief.md`
+- `docs/completion-matrix.md`
+- `docs/architecture/implementation-roadmap.md`
+- `docs/governance/security-operating-model.md`
+- `docs/security-controls/framework-crosswalk.md`
+- `docs/business-continuity-and-recovery.md`
+- `docs/interview-guide.md`
 - `docs/threat-model/enterprise-threat-model.md`
 - `docs/threat-model/residual-risk.md`
 - `docs/security-controls/security-controls-matrix.md`

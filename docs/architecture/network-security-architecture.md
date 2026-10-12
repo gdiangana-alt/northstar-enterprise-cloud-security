@@ -7,42 +7,29 @@ Design a segmented Azure network architecture that reduces external exposure, co
 ## Network Architecture
 
 ```text
-                         Internet
-                            │
-                            ▼
-                  Controlled Ingress
-                            │
-                            ▼
-                    ┌───────────────┐
-                    │  Web Subnet   │
-                    │ 10.0.1.0/24   │
-                    └───────┬───────┘
-                            │
-                     Explicit Access
-                            │
-                            ▼
-                    ┌───────────────┐
-                    │  App Subnet   │
-                    │ Application   │
-                    │    Tier       │
-                    └───────┬───────┘
-                            │
-                     Restricted Access
-                            │
-                            ▼
-                    Internal Resources
-
-              ┌───────────────────────────┐
-              │   Management Subnet       │
-              │ Administrative Services   │
-              └───────────────────────────┘
-
-All tiers
+Internet
    │
    ▼
-Azure Activity / Security Telemetry
-   │
+Application Gateway WAF
+Dedicated WAF subnet
+   │ HTTPS
    ▼
+App Service
+Direct ingress restricted to gateway path
+   │ Managed identity
+   ▼
+Azure Key Vault
+
+Segmented VNet
+   ├── Management subnet
+   ├── Web subnet
+   ├── Application subnet
+   └── Dedicated WAF subnet
+            │
+            ▼
+Gateway diagnostics and Azure activity
+            │
+            ▼
 Log Analytics → Microsoft Sentinel
 ```
 
@@ -52,19 +39,20 @@ NorthStar separates workloads according to function and trust requirements.
 
 ### Web Tier
 
-The web tier represents services requiring controlled external connectivity.
+The public web path is fronted by Application Gateway WAF. The gateway uses OWASP Core Rule Set 3.2 in Detection mode, terminates trusted HTTPS and sends access, performance and firewall telemetry to Log Analytics.
 
 Security controls include:
 
-- Dedicated subnet
+- Dedicated WAF subnet
 - Network Security Group
-- Explicit HTTP/HTTPS rules where required
+- HTTP-to-HTTPS redirection
+- Managed HTTPS certificate retrieved from Key Vault
 - Default-deny behavior for unauthorized inbound traffic
-- No assumption of trust for downstream application resources
+- Restricted App Service direct ingress
 
 ### Application Tier
 
-The application tier is isolated from direct Internet exposure.
+The landing-zone VNet includes a dedicated application subnet for tier separation. The validated web workload uses App Service with direct access restricted to the Application Gateway path rather than claiming that the service is hosted in the application subnet.
 
 Access should originate only from explicitly authorized services or network segments.
 
@@ -140,7 +128,7 @@ Traffic between web, application, management, and data resources should be permi
 
 Network and resource-management activity feeds the broader NorthStar security operations architecture.
 
-Relevant telemetry is centralized through Azure monitoring services and Microsoft Sentinel to support detection and investigation.
+Application Gateway access, performance and WAF logs are centralized with Azure control-plane telemetry through Log Analytics and Microsoft Sentinel. WAF telemetry was used to tune a multi-signal high-confidence scanning detection.
 
 ## Design Principle
 

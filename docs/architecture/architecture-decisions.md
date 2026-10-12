@@ -69,7 +69,7 @@ Workload tiers should be separated according to function and trust requirements.
 
 Segmentation reduces unnecessary connectivity and limits potential lateral movement.
 
-The permanent NorthStar environment validated VNet, subnet, and NSG controls. Additional application and management segmentation represents target-state architecture where not present in the permanent environment.
+The landing-zone project validated management, web, application and dedicated WAF subnets with tier-specific NSGs. Private Link and Bastion remain target-state controls.
 
 ---
 
@@ -145,9 +145,59 @@ The security controls matrix therefore identifies controls as:
 
 - Validated
 - Validated in Lab
+- Implemented
+- Authored
 - Target State
 
 This prevents architectural recommendations from being presented as production implementation experience.
+
+---
+
+## Decision 9 — Protected, Passwordless Infrastructure Delivery
+
+### Decision
+
+Infrastructure changes should pass automated quality, security and policy checks, and cloud automation should use federated identity instead of stored client secrets.
+
+### Rationale
+
+NorthStar validates protected pull requests, Checkov, policy-as-code and GitHub Actions OIDC. The demonstrated live identity is plan-only and cannot deploy infrastructure, separating assurance from change authority.
+
+---
+
+## Decision 10 — Telemetry-Based Detection Tuning
+
+### Decision
+
+Detection thresholds should be based on observed behavior and verified with positive and negative tests.
+
+### Rationale
+
+The original match-all WAF rule created excessive incidents. Thirty days of telemetry were used to define a high-confidence multi-signal replacement, and the legacy rule was disabled only after configuration and result validation.
+
+---
+
+## Decision 11 — Human Approval for Consequential Response
+
+### Decision
+
+Automation may prepare and record response, but consequential containment requires explicit approval until its authorization, rollback and failure behavior are proven.
+
+### Rationale
+
+NorthStar validates an approval task and least-privilege Logic App that records execution without destructive containment. This demonstrates safe orchestration while preserving accountable human judgment.
+
+---
+
+## Decision 12 — Evidence as a Control Output
+
+### Decision
+
+Security validation should produce sanitized, reviewable evidence without exposing environment identifiers or credentials.
+
+### Rationale
+
+The operational validator returns a failing exit code for drift and produces expected-versus-actual JSON. GitHub workflows upload only sanitized artifacts, while raw plans and sensitive identifiers remain outside the public evidence set.
 
 ---
 

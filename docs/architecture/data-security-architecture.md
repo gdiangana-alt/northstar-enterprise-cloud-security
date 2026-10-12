@@ -97,13 +97,15 @@ Application secrets should not be embedded in:
 - Container images
 - Public repositories
 
-The target architecture uses Azure Key Vault as the centralized service for managing:
+The validated landing-zone architecture uses Azure Key Vault as the centralized service for managing:
 
 - Secrets
 - Cryptographic keys
 - Certificates
 
-Azure Key Vault is part of the target architecture and is not represented as an implemented NorthStar control unless separately validated.
+NorthStar validated Key Vault with Azure RBAC, an App Service system-assigned managed identity and an Application Gateway user-assigned managed identity. The application identity received `Key Vault Secrets User` only at vault scope, and the gateway retrieved its TLS certificate through a versionless Key Vault secret reference.
+
+Automated secret rotation, certificate issuance and renewal remain target-state operational improvements.
 
 ## Workload Authentication
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The NorthStar enterprise cloud-security architecture is organized into six security domains that work together to protect Azure resources, identities, workloads, data, and operations.
+The NorthStar enterprise cloud-security architecture is organized into eight security domains that work together to protect Azure resources, identities, workloads, data, delivery and operations.
 
 ## 1. Identity and Access Management
 
@@ -34,6 +34,8 @@ Reduce attack surface and limit lateral movement through segmentation and contro
 - Azure Virtual Network
 - Segmented subnets
 - Network Security Groups
+- Application Gateway WAF
+- Restricted App Service ingress
 - Restricted inbound access
 - Internal traffic controls
 - Secure management paths
@@ -54,7 +56,7 @@ Protect sensitive information throughout its lifecycle.
 - Storage access controls
 - Encryption at rest
 - Encryption in transit
-- Azure Key Vault architecture
+- Azure Key Vault with scoped managed-identity access
 - Secrets-management principles
 - Managed identities for workload authentication
 - Time-limited delegated access where appropriate
@@ -113,9 +115,42 @@ Ensure detected security events can be investigated, classified, contained, reme
 - Resolution
 - Incident documentation
 
+## 7. Secure Infrastructure Delivery
+
+### Objective
+
+Ensure infrastructure changes are reviewed, tested, policy compliant and authenticated without stored cloud credentials.
+
+### Controls
+
+- Terraform and Bicep
+- Protected pull requests
+- Formatting and validation
+- Checkov security scanning
+- Policy-as-code
+- GitHub Actions OIDC
+- Plan-only managed identity
+- Sanitized workflow evidence
+
+## 8. Continuity and Recovery
+
+### Objective
+
+Restore trustworthy identity, security visibility, infrastructure and application service after failure or compromise.
+
+### Controls
+
+- Version-controlled infrastructure and detection content
+- Remote state with authentication and locking
+- Emergency-access design
+- Key Vault versioning and recovery capabilities
+- Certificate renewal procedure
+- Evidence preservation
+- Recovery sequencing and validation criteria
+
 ## Architectural Relationship
 
-The six domains operate as an integrated security model:
+The eight domains operate as an integrated security model:
 
 ```text
 Identity
@@ -128,6 +163,11 @@ Data & Workloads
    ↓
 Governance
    ↓
+Secure Delivery
+   ↓
 Monitoring & Detection
    ↓
 Incident Response
+   ↓
+Continuity & Recovery
+```

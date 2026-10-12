@@ -15,6 +15,7 @@ Azure Environment
        ├── Administrative Activity
        ├── Resource Changes
        ├── Policy Activity
+       ├── WAF and Gateway Activity
        └── Security Telemetry
                     │
                     ▼
@@ -40,16 +41,14 @@ Azure Environment
                     ▼
           Analyst Investigation
                     │
-          ┌─────────┴─────────┐
-          ▼                   ▼
-      Containment        Classification
-          │                   │
-          └─────────┬─────────┘
                     ▼
-               Remediation
+     Approval Task for Medium / High
                     │
                     ▼
-                Resolution
+      Approved Playbook or Manual Action
+                    │
+                    ▼
+       Classification and Resolution
 ```
 
 ## Telemetry Collection
@@ -80,7 +79,9 @@ Microsoft Sentinel provides the SIEM layer.
 
 KQL is used to transform collected telemetry into security detections.
 
-NorthStar validated this process by developing a detection for failed Azure control-plane operations and converting it into a scheduled analytics rule.
+NorthStar validated this process through failed Azure control-plane detection and Application Gateway WAF analytics. The original match-all WAF rule generated excessive Low-severity incidents. Thirty days of telemetry were analyzed to establish client-level five-minute baselines, and the rule was replaced with a multi-signal detection using event volume, distinct rules and distinct request paths.
+
+The replacement was validated against historical qualifying activity, deployed disabled for configuration verification, enabled after validation and monitored with a recent negative-test window. The legacy rule was disabled rather than deleted, preserving an auditable rollback path.
 
 ## Alerting
 
@@ -129,9 +130,17 @@ MITRE ATT&CK provides a framework for relating detections to potential adversary
 
 ATT&CK mappings should provide investigation context and should not be interpreted as proof that an adversary technique occurred.
 
-## Response
+## Approval-Gated Response
 
-Response actions depend on investigation findings and may include:
+Medium- and High-severity incidents enter a Sentinel automation rule that:
+
+- changes the incident to Active;
+- adds `ApprovalRequired`; and
+- creates a task requiring review of scope, evidence, business impact, approver identity and rollback.
+
+After approval is recorded, the managed-identity Logic App can be invoked manually. The validated playbook adds an audit comment and `ResponseApproved` label. It performs no destructive containment.
+
+Potential enterprise response actions may include:
 
 - Identity containment
 - Access revocation
@@ -143,6 +152,12 @@ Response actions depend on investigation findings and may include:
 - Escalation
 - Detection tuning
 - Incident resolution
+
+Consequential actions should be added only after least-privilege permissions, false-positive handling, failure behavior and rollback are tested.
+
+## Operational Assurance
+
+The PowerShell operational validator compares live Azure and Sentinel state with a version-controlled YAML manifest. It checks subscription and workspace configuration, Sentinel enablement, and required analytics-rule properties. A detected mismatch returns a non-zero exit code, and successful runs produce sanitized JSON evidence through GitHub Actions using OIDC.
 
 ## Governance Integration
 
